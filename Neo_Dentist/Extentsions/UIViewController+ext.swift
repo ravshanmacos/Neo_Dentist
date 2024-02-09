@@ -51,3 +51,23 @@ extension UIViewController {
         self.present(errorAlertController, animated: true)
     }
 }
+
+//MARK: Navigation
+extension UIViewController {
+    func hideNavigationBar(animated: Bool) {
+        if animated {
+            transitionCoordinator?.animate(alongsideTransition: { context in
+                self.navigationController?.setNavigationBarHidden(true, animated: animated)
+            })
+        } else {
+            self.navigationController?.setNavigationBarHidden(true, animated: false)
+        }
+    }
+    
+    func showNavigationBar(animated: Bool) {
+        if let navigationController = self.navigationController, navigationController.isNavigationBarHidden {
+            navigationController.setNavigationBarHidden(false, animated: animated)
+        }
+    }
+}
+

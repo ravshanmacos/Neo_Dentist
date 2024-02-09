@@ -19,16 +19,12 @@ class ClinicServicesListViewController: BaseViewController {
     private let viewModel: ClinicServicesListViewModel
     private let rootView: ClinicServicesListRootView
     
-    var appointmentRequest: MakeAppointmentRequest
-    
     private var subscriptions = Set<AnyCancellable>()
     
-    init(viewModelFactory: ClinicServicesViewModelFactory,
-         appointmentRequest: MakeAppointmentRequest
+    init(viewModelFactory: ClinicServicesViewModelFactory
     ){
         self.viewModelFactory = viewModelFactory
         self.viewModel = viewModelFactory.makeClinicServicesListViewModel()
-        self.appointmentRequest = appointmentRequest
         self.rootView = ClinicServicesListRootView(viewModel: viewModel)
         super.init()
     }

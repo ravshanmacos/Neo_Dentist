@@ -142,7 +142,7 @@ extension DoctorsListRootView: UICollectionViewDelegate, UICollectionViewDataSou
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let item = viewModel.doctorsData[indexPath.row]
-        viewModel.selectedDoctor(with: item.id)
+        viewModel.navigateSingleDoctorView(with: item.id)
     }
 }
 

@@ -17,35 +17,30 @@ class DoctorViewController: BaseViewController {
     //MARK: Properties
     private let viewModelFactory: DoctorViewModelFactory
     private let viewModel: DoctorViewModel
-    private let rootView: DoctorRootView
     
-    private var appointmentRequest: MakeAppointmentRequest
     private var subscriptions = Set<AnyCancellable>()
     
     //MARK: Methods
     init(doctorID: Int,
-         viewModelFactory: DoctorViewModelFactory,
-         appointmentRequest: MakeAppointmentRequest
+         viewModelFactory: DoctorViewModelFactory
     ){
         self.viewModelFactory = viewModelFactory
         self.viewModel = viewModelFactory.makeDoctorViewModel(doctorID: doctorID)
-        self.appointmentRequest = appointmentRequest
-        self.rootView = DoctorRootView(viewModel: viewModel)
         super.init()
+        print("doctorID: \(doctorID)")
         bindOpenSelectDateView()
         bindViewModelToView()
     }
     
     override func loadView() {
         super.loadView()
-        view = rootView
+        view = DoctorRootView(viewModel: viewModel)
     }
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         setBackButton()
         setRightButton()
-        tabBarController?.tabBar.isHidden = true
     }
     
     override func viewDidLoad() {

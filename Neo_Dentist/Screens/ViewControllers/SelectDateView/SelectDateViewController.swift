@@ -17,28 +17,19 @@ class SelectDateViewController: BaseViewController {
     //MARK: Properties
     private let viewModelFactory: SelectDateViewModelFactory
     private let viewModel: SelectDateViewModel
-    private let rootView: SelectDateRootView
-   
-    private var appointmentRequest: MakeAppointmentRequest
     private var subscriptions = Set<AnyCancellable>()
     
     //MARK: Methods
-    init(viewModelFactory: SelectDateViewModelFactory,
-         appointmentRequest: MakeAppointmentRequest
-    ){
+    init(viewModelFactory: SelectDateViewModelFactory){
         self.viewModelFactory = viewModelFactory
         self.viewModel = viewModelFactory.makeSelectDateViewModel()
-        
-        self.appointmentRequest = appointmentRequest
-        self.rootView = SelectDateRootView(viewModel: viewModel)
         super.init()
-        viewModel.doctorID = appointmentRequest.doctorID
         bindOpenAppointmentDetailsView()
     }
     
     override func loadView() {
         super.loadView()
-        view = rootView
+        view = SelectDateRootView(viewModel: viewModel)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -50,8 +41,6 @@ class SelectDateViewController: BaseViewController {
         super.viewDidLayoutSubviews()
         setTitle(text: "Выберите дату и время")
         setBackButton()
-        
-        print(appointmentRequest)
     }
     
     override func viewDidLoad() {

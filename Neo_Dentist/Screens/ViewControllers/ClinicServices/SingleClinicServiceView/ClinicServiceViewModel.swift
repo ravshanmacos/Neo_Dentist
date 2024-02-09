@@ -20,7 +20,6 @@ class ClinicServiceViewModel {
           goToDoctorsListNavigator: GoToDoctorsListNavigator) {
         self.servicesRepository = servicesRepository
         self.goToDoctorsListNavigator = goToDoctorsListNavigator
-        getServiceInfo()
     }
     
     @objc func makeAppointmentButtonTapped() {

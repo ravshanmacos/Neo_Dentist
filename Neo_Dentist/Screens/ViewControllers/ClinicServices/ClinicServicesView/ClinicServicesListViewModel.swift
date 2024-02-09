@@ -16,14 +16,15 @@ class ClinicServicesListViewModel {
     private let goToSingleServiceNavigator: GoToSingleServiceNavigator
     
     //MARK: Methods
-    init(servicesRepository: ServicesRepository, goToSingleServiceNavigator: GoToSingleServiceNavigator) {
+    init(servicesRepository: ServicesRepository, 
+         goToSingleServiceNavigator: GoToSingleServiceNavigator) {
         self.servicesRepository = servicesRepository
         self.goToSingleServiceNavigator = goToSingleServiceNavigator
         
         getServices()
     }
     
-    func serviceTapped(with serviceID: Int) {
+    func navigateToSingleServiceView(with serviceID: Int) {
         goToSingleServiceNavigator.navigateToSingleService(serviceID: serviceID)
     }
     

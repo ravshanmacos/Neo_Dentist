@@ -24,6 +24,7 @@ class ClinicServiceRootView: BaseView {
     let makeAppointmentButton: NDMainButton = {
         let button = NDMainButton()
         button.isEnabled = true
+        button.setTitle(text: "Записаться на прием")
         return button
     }()
     

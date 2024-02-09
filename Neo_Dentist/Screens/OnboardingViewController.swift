@@ -110,22 +110,6 @@ extension OnboardingViewController {
             showNavigationBar(animated: animated)
         }
     }
-    
-    func hideNavigationBar(animated: Bool) {
-        if animated {
-            transitionCoordinator?.animate(alongsideTransition: { context in
-                self.setNavigationBarHidden(true, animated: true)
-            })
-        } else {
-            self.setNavigationBarHidden(true, animated: false)
-        }
-    }
-    
-    func showNavigationBar(animated: Bool) {
-        if self.isNavigationBarHidden {
-            self.setNavigationBarHidden(false, animated: animated)
-        }
-    }
 }
 
 extension OnboardingViewController: UINavigationControllerDelegate {

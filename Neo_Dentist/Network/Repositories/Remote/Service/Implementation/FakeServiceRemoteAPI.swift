@@ -10,21 +10,28 @@ import PromiseKit
 
 class FakeServiceRemoteAPI: ServiceRemoteAPI {
     
+    private var services: [SingleServiceResponse] = []
+    
+    init() {
+        generateMockServicesList()
+    }
+    
+    private func generateMockServicesList() {
+        let imageURLString = "https://res.cloudinary.com/dqkyrxpjs/image/upload/v1/media/images/icon1_vfpgrj"
+        
+        services = Array(0...15).map { index in
+            let internetImage1 = InternetImage(id: 11 + index, imageString: imageURLString)
+            return SingleServiceResponse(id: index + 1,
+                                                        name: "Пломбирование зубов",
+                                                        image: internetImage1)
+        }
+    }
+    
     //MARK: Methods
     func getServices(limit: Int) -> Promise<ServiceResponse> {
         return Promise<ServiceResponse> { resolver in
             guard limit > 0 else { return resolver.reject(NeoDentistError.failedToGetServices)}
-            let imageURLString = "https://res.cloudinary.com/dqkyrxpjs/image/upload/v1/media/images/icon1_vfpgrj"
-            let singleServiceResponses: [SingleServiceResponse] = Array(0...limit).map { index in
-                let internetImage1 = InternetImage(id: 11 + index, imageString: imageURLString)
-                return SingleServiceResponse(id: index + 1,
-                                                            name: "Пломбирование зубов",
-                                                            image: internetImage1)
-            }
-            
-            let serviceResponse = ServiceResponse(totalCount: 15,
-                                                  totalPages: 1,
-                                                  services: singleServiceResponses)
+            let serviceResponse = ServiceResponse(totalCount: 15, totalPages: 1, services: services)
             resolver.fulfill(serviceResponse)
         }
     }

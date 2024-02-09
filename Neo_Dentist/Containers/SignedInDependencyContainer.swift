@@ -16,7 +16,6 @@ class SignedInDependencyContainer {
     
     private let sharedMainViewModel: MainManagerViewModel
     private let sharedUserSession: UserSession
-    private let appointmentRequestModel: MakeAppointmentRequest
     private let sharedMainScreenViewModel: MainScreenViewModel
    
     
@@ -43,11 +42,6 @@ class SignedInDependencyContainer {
             return FakeServiceRemoteAPI()
         }
         
-        //AppointmentRequest
-        func makeAppointmentRequestModel() -> MakeAppointmentRequest {
-            return MakeAppointmentRequest(doctorID: 0, serviceID: 0, appointmentTime: "", patientFirstName: "", patientLastName: "", patientPhoneNumber: "")
-        }
-        
         //Initializing
         self.sharedUserSession = userSession
         self.sharedUserSessionRepository = appDependencyContainer.sharedUserSessionRepository
@@ -56,14 +50,13 @@ class SignedInDependencyContainer {
         self.sharedServiceRepository = makeServiceRepository()
         self.sharedDoctorRepository = makeDoctorRepository()
         
-        self.appointmentRequestModel = makeAppointmentRequestModel()
-        self.sharedMainScreenViewModel = MainScreenViewModel(serviceRepository: sharedServiceRepository, doctorRepository: sharedDoctorRepository, appointmentRequest: appointmentRequestModel)
+        self.sharedMainScreenViewModel = MainScreenViewModel(serviceRepository: sharedServiceRepository, doctorRepository: sharedDoctorRepository)
     }
     
     //TabBar View Controller
     func makeTabBarViewController() -> TabbarController {
         let mainScreenViewController = makeMainScreenViewController()
-        let makeAppointmentViewController = makeAppointmentViewController()
+        let makeAppointmentViewController = makeAppointmentViewController(appointmentRequest: nil)
         let AppointmentHistoriesViewController = makeAppointmentHistoriesViewController()
         let userProfileViewController = makeUserProfileViewController()
         return TabbarController(mainScreenViewController: mainScreenViewController,
@@ -74,37 +67,14 @@ class SignedInDependencyContainer {
     
     //Main Screen
     func makeMainScreenViewController() -> MainScreenViewController {
-        let clinicServicesListViewControllerFactory = {
-            return self.makeClinicServicesListViewController()
-        }
-        
-        let clinicServiceViewControllerFactory = { (serviceID: Int) in
-            return self.makeClinicServiceViewController(serviceID: serviceID)
-        }
-        
-        let doctorsListViewControllerFactory = {
-            return self.makeDoctorsListViewController()
-        }
-        
-        let doctorViewControllerFactory = { (doctorID: Int) in
-            return self.makeDoctorViewController(doctorID: doctorID)
-        }
-        
-        let selectDateViewControllerFactory = {
-            return self.makeSelectDateViewController()
-        }
-        
-        let appointmentDetailsControllerFactory = {
-            return self.makeAppointmentViewController()
-        }
-        
-        return MainScreenViewController(viewModel: sharedMainScreenViewModel, clinicServicesListViewControllerFactory: clinicServicesListViewControllerFactory, clinicServiceViewControllerFactory: clinicServiceViewControllerFactory, doctorsListViewControllerFactory: doctorsListViewControllerFactory, doctorViewControllerFactory: doctorViewControllerFactory, selectDateViewControllerFactory: selectDateViewControllerFactory, appointmentDetailsControllerFactory: appointmentDetailsControllerFactory)
+        return MainScreenViewController(viewModel: sharedMainScreenViewModel,
+                                        viewControllersFactory: self)
     }
     
     //Make Appointment
-    func makeAppointmentViewController() -> AppointmentDetailsViewController {
+    func makeAppointmentViewController(appointmentRequest: MakeAppointmentRequest?) -> AppointmentDetailsViewController {
         return AppointmentDetailsViewController(viewModelFactory: self,
-                                                appointmentRequest: appointmentRequestModel)
+                                                appointmentRequest: appointmentRequest)
     }
     
     func makeAppointmentViewModel() -> AppointmentDetailsViewModel {
@@ -132,13 +102,14 @@ class SignedInDependencyContainer {
     }
 }
 
-extension SignedInDependencyContainer: AppointmentViewModelFactory, AppointmentHistoriesViewModelFactory, UserProfileViewModelFactory {}
+extension SignedInDependencyContainer: AppointmentViewModelFactory, AppointmentHistoriesViewModelFactory, UserProfileViewModelFactory, MainScreenViewControllerFactory {}
+
 
 //MARK: Reusable View Controllers
 extension SignedInDependencyContainer {
     //Clinic Services List View
     func makeClinicServicesListViewController() -> ClinicServicesListViewController {
-        return ClinicServicesListViewController(viewModelFactory: self, appointmentRequest: appointmentRequestModel)
+        return ClinicServicesListViewController(viewModelFactory: self)
     }
     
     func makeClinicServicesListViewModel() -> ClinicServicesListViewModel {
@@ -156,7 +127,7 @@ extension SignedInDependencyContainer {
     
     //Doctors List View
     func makeDoctorsListViewController() -> DoctorsListViewController {
-        return DoctorsListViewController(viewModelFactory: self, appointmentRequest: appointmentRequestModel)
+        return DoctorsListViewController(viewModelFactory: self)
     }
     
     func makeDoctorsListViewModel() -> DoctorsListViewModel {
@@ -165,7 +136,7 @@ extension SignedInDependencyContainer {
     
     //Single Doctor View
     func makeDoctorViewController(doctorID: Int) -> DoctorViewController {
-        return DoctorViewController(doctorID: doctorID, viewModelFactory: self, appointmentRequest: appointmentRequestModel)
+        return DoctorViewController(doctorID: doctorID, viewModelFactory: self)
     }
     
     func makeDoctorViewModel(doctorID: Int) -> DoctorViewModel {
@@ -183,7 +154,7 @@ extension SignedInDependencyContainer {
     
     //Appointment Date View
     func makeSelectDateViewController() -> SelectDateViewController {
-        return SelectDateViewController(viewModelFactory: self, appointmentRequest: appointmentRequestModel)
+        return SelectDateViewController(viewModelFactory: self)
     }
     
     func makeSelectDateViewModel() -> SelectDateViewModel {
@@ -191,7 +162,7 @@ extension SignedInDependencyContainer {
     }
     //UserInfoView
     func makeUserInfoViewController() -> UserInfoViewController {
-        return UserInfoViewController(viewModelFactory: self, appointmentRequest: appointmentRequestModel)
+        return UserInfoViewController(viewModelFactory: self, appointmentRequest: MakeAppointmentRequest(doctorID: 0, serviceID: 0, appointmentTime: "", patientFirstName: "", patientLastName: "", patientPhoneNumber: ""))
     }
     
     func makeUserInfoViewModel() -> UserInfoViewModel {

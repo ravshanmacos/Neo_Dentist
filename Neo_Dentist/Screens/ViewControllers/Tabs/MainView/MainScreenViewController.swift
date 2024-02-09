@@ -9,41 +9,31 @@ import UIKit
 import Combine
 import PanModal
 
+protocol MainScreenViewControllerFactory {
+    func makeClinicServicesListViewController() -> ClinicServicesListViewController 
+    func makeClinicServiceViewController(serviceID: Int) -> ClinicServiceViewController
+    func makeDoctorsListViewController() -> DoctorsListViewController
+    func makeDoctorViewController(doctorID: Int) -> DoctorViewController
+    func makeAppointmentViewController(appointmentRequest: MakeAppointmentRequest?) -> AppointmentDetailsViewController
+    func makeSelectDateViewController() -> SelectDateViewController
+}
+
 class MainScreenViewController: BaseViewController {
     //MARK: Properties
     private let viewModel: MainScreenViewModel
+    private let viewControllersFactory: MainScreenViewControllerFactory
     
-    //Child ViewControllers
-    private let clinicServicesListViewControllerFactory: () -> ClinicServicesListViewController
-    private let clinicServiceViewControllerFactory: (Int) -> ClinicServiceViewController
-    private let doctorsListViewControllerFactory: () -> DoctorsListViewController
-    private let doctorViewControllerFactory: (Int) -> DoctorViewController
-    private let selectDateViewControllerFactory: () -> SelectDateViewController
-    private let appointmentDetailsControllerFactory: () -> AppointmentDetailsViewController
-    
+    private var subscriptions = Set<AnyCancellable>()
     private var mainScreenRootView: MainScreenRootView {
         return view as! MainScreenRootView
     }
-    private var subscriptions = Set<AnyCancellable>()
     
     //MARK: Methods
     init(viewModel: MainScreenViewModel,
-         clinicServicesListViewControllerFactory: @escaping () -> ClinicServicesListViewController,
-         clinicServiceViewControllerFactory: @escaping (Int) -> ClinicServiceViewController,
-         doctorsListViewControllerFactory: @escaping () -> DoctorsListViewController,
-         doctorViewControllerFactory: @escaping (Int) -> DoctorViewController,
-         selectDateViewControllerFactory: @escaping () -> SelectDateViewController,
-         appointmentDetailsControllerFactory: @escaping () -> AppointmentDetailsViewController
-    ){
-        self.clinicServicesListViewControllerFactory = clinicServicesListViewControllerFactory
-        self.clinicServiceViewControllerFactory = clinicServiceViewControllerFactory
-        self.doctorsListViewControllerFactory = doctorsListViewControllerFactory
-        self.doctorViewControllerFactory = doctorViewControllerFactory
-        self.selectDateViewControllerFactory = selectDateViewControllerFactory
-        self.appointmentDetailsControllerFactory = appointmentDetailsControllerFactory
+         viewControllersFactory: MainScreenViewControllerFactory){
+        self.viewControllersFactory = viewControllersFactory
         self.viewModel = viewModel
         super.init()
-        navigationController?.delegate = self
         //bindNavigations()
     }
     
@@ -54,27 +44,16 @@ class MainScreenViewController: BaseViewController {
     
     override func viewDidLoad() {
          super.viewDidLoad()
+        navigationController?.delegate = self
+        viewModel.getServices()
+        viewModel.getAdvertisement()
+        viewModel.getRecomendedDoctors()
         observeNavigationAction()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        navigationController?.setNavigationBarHidden(true, animated: animated)
-        tabBarController?.tabBar.isHidden = false
-        
         mainScreenRootView.setUserName(text: UserDefaults.standard.string(forKey: UserDefaultsKeys.firstName))
-    }
-
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        navigationController?.setNavigationBarHidden(false, animated: animated)
-    }
-}
-
-
-extension MainScreenViewController: UINavigationControllerDelegate {
-    func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
-        tabBarController?.tabBar.isHidden = true
     }
 }
 
@@ -85,7 +64,7 @@ private extension MainScreenViewController {
         subscribe(to: publisher)
     }
     
-    func subscribe(to publisher: AnyPublisher<MainScreenNavigationAction?, Never>) {
+    func subscribe(to publisher: AnyPublisher<MainScreenNavigationAction, Never>) {
         publisher
             .receive(on: DispatchQueue.main)
             .removeDuplicates()
@@ -95,25 +74,27 @@ private extension MainScreenViewController {
             }.store(in: &subscriptions)
     }
     
-    func respond(to action: MainScreenNavigationAction?) {
+    func respond(to action: MainScreenNavigationAction) {
         switch action {
         case .present(let view):
            present(view: view)
-        case .presented, .none:
+        case .presented:
             break
         }
     }
     
     func present(view: MainScreenViewState) {
         switch view {
+        case .initial:
+            viewModel.setInitialState()
         case .clinicServicesListView:
             self.presentClinicServicesListViewController()
-        case .clinicServiceView(let serviceID):
-            self.presentClinicServiceViewController(serviceID: serviceID)
+        case .clinicServiceView:
+            self.presentClinicServiceViewController()
         case .doctorsListView:
             self.presentDoctorsListViewController()
-        case .doctorView(let doctorID):
-            self.presentDoctorViewController(doctorID: doctorID)
+        case .doctorView:
+            self.presentDoctorViewController()
         case .selectDateView:
             self.presentSelectDateViewController()
         case .appointmentDetailsView:
@@ -122,95 +103,77 @@ private extension MainScreenViewController {
     }
     
     func presentClinicServicesListViewController() {
-        let clinicServicesListViewController = clinicServicesListViewControllerFactory()
+        let clinicServicesListViewController = viewControllersFactory.makeClinicServicesListViewController()
         navigationController?.pushViewController(clinicServicesListViewController, animated: true)
     }
     
-    func presentClinicServiceViewController(serviceID: Int) {
-        let clinicServiceViewController = clinicServiceViewControllerFactory(serviceID)
+    func presentClinicServiceViewController() {
+        guard let serviceID = viewModel.serviceID else { return }
+        let clinicServiceViewController = viewControllersFactory.makeClinicServiceViewController(serviceID: serviceID)
         navigationController?.presentPanModal(clinicServiceViewController)
     }
     
     func presentDoctorsListViewController() {
-        let doctorsListViewController = doctorsListViewControllerFactory()
+        let doctorsListViewController = viewControllersFactory.makeDoctorsListViewController()
         navigationController?.pushViewController(doctorsListViewController, animated: true)
     }
     
-    func presentDoctorViewController(doctorID: Int) {
-        let doctorViewController = doctorViewControllerFactory(doctorID)
+    func presentDoctorViewController() {
+        guard let doctorID = viewModel.doctorID else { return }
+        let doctorViewController = viewControllersFactory.makeDoctorViewController(doctorID: doctorID)
         navigationController?.pushViewController(doctorViewController, animated: true)
     }
     
     func presentSelectDateViewController() {
-        let selectDateViewController = selectDateViewControllerFactory()
+        let selectDateViewController = viewControllersFactory.makeSelectDateViewController()
         navigationController?.pushViewController(selectDateViewController, animated: true)
     }
     
     func presentAppointmentDetailsViewController() {
-        let appointmentDetailsViewController = appointmentDetailsControllerFactory()
+        guard let appointmentRequest = viewModel.appointmentRequest else { return }
+        let appointmentDetailsViewController = viewControllersFactory.makeAppointmentViewController(appointmentRequest: appointmentRequest)
         navigationController?.pushViewController(appointmentDetailsViewController, animated: true)
     }
 }
 
-/*
- extension MainScreenViewController {
-     func bindNavigations() {
-         bindOpenLikedDoctorsView()
-         bindOpenAllServices()
-         bindOpenDoctorsList()
-         bindInfoAboutService()
-         bindInfoAboutDoctor()
-     }
-  
-     func bindOpenLikedDoctorsView() {
-         viewModel
-             .$openLikedDoctorsView
-             .receive(on: DispatchQueue.main)
-             .sink {[weak self] open in
-                 guard let self, open else { return }
-                 //navigationController?.pushViewController(factory.makeLikedDoctorsViewController(), animated: true)
-             }.store(in: &subscriptions)
-     }
-     
-     func bindOpenAllServices() {
-         viewModel
-             .$openAllServices
-             .receive(on: DispatchQueue.main)
-             .sink {[weak self] open in
-                 guard let self, open else { return }
-                 //navigationController?.pushViewController(factory.makeSelectServicesViewController(isModifying: false, isFromDoctor: viewModel.isFromDoctor, isFromClinicService: viewModel.isFromClinicService, appointmentRequest: viewModel.appointmentRequest), animated: true)
-             }.store(in: &subscriptions)
-     }
-     
-     func bindOpenDoctorsList() {
-         viewModel
-             .$openDoctorsList
-             .receive(on: DispatchQueue.main)
-             .sink {[weak self] open in
-                 guard let self, open else { return }
-                 //navigationController?.pushViewController(factory.makeSelectDoctorViewController(isModifying: false, isFromDoctor: viewModel.isFromDoctor, isFromClinicService: viewModel.isFromClinicService, appointmentRequest: viewModel.appointmentRequest), animated: true)
-             }.store(in: &subscriptions)
-     }
-     
-     func bindInfoAboutService() {
-         viewModel
-             .$openInfoAboutService
-             .receive(on: DispatchQueue.main)
-             .sink {[weak self] open in
-                 guard let self, let serviceID = viewModel.serviceID, open else { return }
-                 //navigationController?.presentPanModal(factory.makeInfoAboutServiceViewController(isModifying: false, serviceID: serviceID, isFromDoctor: viewModel.isFromDoctor, isFromClinicService: viewModel.isFromClinicService, isFromMain: true))
-             }.store(in: &subscriptions)
-     }
-     
-     func bindInfoAboutDoctor() {
-         viewModel
-             .$openInfoAboutDoctor
-             .receive(on: DispatchQueue.main)
-             .sink {[weak self] open in
-                 guard let self, let id = viewModel.doctorID, open else { return }
-                 //navigationController?.pushViewController(factory.makeInfoAboutDoctorViewController(isModifying: false, doctorID: id, isFromDoctor: viewModel.isFromDoctor, isFromClinicService: viewModel.isFromClinicService, appointmentRequest: viewModel.appointmentRequest), animated: true)
-             }.store(in: &subscriptions)
-     }
- }
- */
+//MARK: Navigation Controller
+extension MainScreenViewController: UINavigationControllerDelegate {
+    func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
+        hideAndShowNavigationBar(for: viewController, animated: animated)
+    }
+    
+    func navigationController(_ navigationController: UINavigationController, didShow viewController: UIViewController, animated: Bool) {
+        
+    }
+    
+    func hideAndShowNavigationBar(for viewController: UIViewController, animated: Bool) {
+        if viewController is MainScreenViewController {
+            hideNavigationBar(animated: animated)
+            tabBarController?.tabBar.isHidden = false
+        } else {
+            showNavigationBar(animated: animated)
+            tabBarController?.tabBar.isHidden = true
+        }
+    }
+
+    func findMainScreenViewState(for viewController: UIViewController) -> MainScreenViewState? {
+        switch viewController {
+        case is ClinicServicesListViewController:
+            return .clinicServicesListView
+        case is ClinicServiceViewController:
+            return .clinicServiceView
+        case is DoctorsListViewController:
+            return .doctorsListView
+        case is DoctorViewController:
+            return .doctorView
+        case is SelectDateViewController:
+            return .selectDateView
+        case is AppointmentDetailsViewController:
+            return .appointmentDetailsView
+        default:
+            assertionFailure("Encountered unexpected child view controller type in OnboardingViewController")
+            return nil
+        }
+    }
+}
 

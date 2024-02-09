@@ -19,12 +19,11 @@ class SelectDateViewModel {
     private let doctorRepository: DoctorRepository
     private let goToAppointmentDetailsNavigator: GoToAppointmentDetailsNavigator
     
+    private let calendarConfigure = CalendarConfigure.shared
+    
     private var selectedDay: Int?
     var selectedTime: AvailableHoursResponse?
-    
-    var doctorID: Int? 
-    
-    private let calendarConfigure = CalendarConfigure.shared
+    var doctorID: Int?
     
     //MARK: Methods
     init(doctorRepository: DoctorRepository,

@@ -11,6 +11,9 @@ import Combine
 class DoctorsListViewModel {
     
     //MARK: Properties
+    private let doctorRepository: DoctorRepository
+    private let goToSingleDoctorNavigator: GoToSingleDoctorNavigator
+    
     @Published private(set) var openFilterDoctorView = false
     @Published private(set) var doctorsData: [SingleDoctorResponse] = []
     
@@ -19,11 +22,6 @@ class DoctorsListViewModel {
             doctorsData = originalData
         }
     }
-    private let doctorRepository: DoctorRepository
-    private let goToSingleDoctorNavigator: GoToSingleDoctorNavigator
-    
-    var doctorID: Int?
-    var selectedDoctor: Int = 0
     
     //MARK: Methods
     init(doctorRepository: DoctorRepository,
@@ -32,7 +30,7 @@ class DoctorsListViewModel {
         self.goToSingleDoctorNavigator = goToSingleDoctorNavigator
     }
     
-    func selectedDoctor( with doctorID: Int) {
+    func navigateSingleDoctorView( with doctorID: Int) {
         goToSingleDoctorNavigator.navigateToSingleDoctor(doctorID: doctorID)
     }
     

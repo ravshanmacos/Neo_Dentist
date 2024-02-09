@@ -18,40 +18,52 @@ class MainScreenViewModel {
     @Published private(set) var recomendedDoctors: SingleDoctorResponse?
     @Published private(set) var advertisement: AdvertisementResponse?
     
-    @Published private(set) var navigationAction: MainScreenNavigationAction?
+    @Published private(set) var navigationAction: MainScreenNavigationAction = .present(view: .initial)
     
     private let serviceRepository: ServicesRepository
     private let doctorRepository: DoctorRepository
 
-    var appointmentRequest: MakeAppointmentRequest
+    var appointmentRequest: MakeAppointmentRequest?
+    var serviceID: Int?
+    var doctorID: Int?
     
     //MARK: Methods
     init(
         serviceRepository: ServicesRepository,
-        doctorRepository: DoctorRepository,
-        appointmentRequest: MakeAppointmentRequest) {
+        doctorRepository: DoctorRepository) {
             self.serviceRepository = serviceRepository
             self.doctorRepository = doctorRepository
-            self.appointmentRequest = appointmentRequest
-            setupListeners()
-            getServices()
-            getAdvertisement()
-            getRecomendedDoctors()
         }
-    
-    private func setupListeners() {
-        NotificationCenter.default.addObserver(self, selector: #selector(navigateToSelectDoctorView),
-                                               name: NSNotification.Name ("openSelectDoctorViewFromMain"), object: nil)
-    }
     
     func serviceTapped(with serviceID: Int) {
         navigateToSingleService(serviceID: serviceID)
-//        self.serviceID = serviceID
-//        isFromDoctor = false
-//        isFromClinicService = true
-//        appointmentRequest.emptyAppointmentRequest()
-//        appointmentRequest.doctorID = serviceID
-//        self.openInfoAboutService = true
+    }
+    
+    func setInitialState() {
+        serviceID = nil
+        doctorID = nil
+        appointmentRequest = nil
+    }
+    
+}
+
+//MARK: Actions
+@objc extension MainScreenViewModel {
+    
+    func openLikedDoctorsTapped() {
+        
+    }
+    
+    func openAllServicesTapped() {
+        navigateToServicesList()
+    }
+    
+    func openDoctorsListTapped() {
+        navigateToDoctorsList()
+    }
+    
+    func recomendedDoctorTapped() {
+        navigateToSingleDoctor(doctorID: 2)
     }
     
 }
@@ -63,7 +75,8 @@ extension MainScreenViewModel: GoToServicesListNavigator, GoToSingleServiceNavig
     }
     
     func navigateToSingleService(serviceID: Int) {
-        navigationAction = .present(view: .clinicServiceView(serviceID: serviceID))
+        self.serviceID = serviceID
+        navigationAction = .present(view: .clinicServiceView)
     }
     
     func navigateToDoctorsList() {
@@ -71,7 +84,8 @@ extension MainScreenViewModel: GoToServicesListNavigator, GoToSingleServiceNavig
     }
     
     func navigateToSingleDoctor(doctorID: Int) {
-        navigationAction = .present(view: .doctorView(doctorID: doctorID))
+        self.doctorID = doctorID
+        navigationAction = .present(view: .doctorView)
     }
     
     func navigateToSelectDate() {
@@ -83,56 +97,8 @@ extension MainScreenViewModel: GoToServicesListNavigator, GoToSingleServiceNavig
     }
 }
 
-//MARK: Actions
-@objc extension MainScreenViewModel {
-    
-    func openCurrentViewTapped() {
-        
-    }
-    
-    func openLikedDoctorsTapped() {
-        
-    }
-    
-    func openAllServicesTapped() {
-        navigateToServicesList()
-//        isFromDoctor = false
-//        isFromClinicService = true
-//        appointmentRequest.emptyAppointmentRequest()
-//        openAllServices = true
-    }
-    
-    func openDoctorsListTapped() {
-        navigateToDoctorsList()
-//        isFromDoctor = true
-//        isFromClinicService = false
-//        appointmentRequest.emptyAppointmentRequest()
-//        openDoctorsList = true
-    }
-    
-    func recomendedDoctorTapped() {
-        navigateToSingleDoctor(doctorID: 2)
-//        guard let doctor = recomendedDoctors else { return }
-//        self.doctorID = doctor.id
-//        isFromDoctor = true
-//        isFromClinicService = false
-//        appointmentRequest.emptyAppointmentRequest()
-//        appointmentRequest.doctorID = doctor.id
-//        openInfoAboutDoctor = true
-    }
-    
-    func navigateToSelectDoctorView(_ notification: NSNotification) {
-//        appointmentRequest.emptyAppointmentRequest()
-//        if let id = notification.userInfo?["serviceID"] as? Int {
-//            self.serviceID = id
-//            appointmentRequest.serviceID = id
-//            openDoctorsList = true
-//        }
-    }
-}
-
 //MARK: Networking
-private extension MainScreenViewModel {
+extension MainScreenViewModel {
     func getServices() {
         serviceRepository
             .getServices(limit: 6)

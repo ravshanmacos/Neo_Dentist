@@ -17,25 +17,19 @@ class DoctorsListViewController: BaseViewController {
     //MARK: Properties
     private let viewModelFactory: DoctorsListViewModelFactory
     private let viewModel: DoctorsListViewModel
-    private let rootView: DoctorsListRootView
-    private var appointmentRequest: MakeAppointmentRequest
     private var subscriptions = Set<AnyCancellable>()
     
     //MARK: Methods
-    init(viewModelFactory: DoctorsListViewModelFactory,
-         appointmentRequest: MakeAppointmentRequest
-    ){
+    init(viewModelFactory: DoctorsListViewModelFactory){
         self.viewModelFactory = viewModelFactory
         self.viewModel = viewModelFactory.makeDoctorsListViewModel()
-        self.appointmentRequest = appointmentRequest
-        self.rootView = DoctorsListRootView(viewModel: viewModel)
         super.init()
         bindNavigations()
     }
     
     override func loadView() {
         super.loadView()
-        view = rootView
+        view = DoctorsListRootView(viewModel: viewModel)
     }
     
     override func viewWillLayoutSubviews() {

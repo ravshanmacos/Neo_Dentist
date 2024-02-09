@@ -8,10 +8,11 @@
 import Foundation
 
 enum MainScreenViewState {
+    case initial
     case clinicServicesListView
-    case clinicServiceView(serviceID: Int)
+    case clinicServiceView
     case doctorsListView
-    case doctorView(doctorID: Int)
+    case doctorView
     case selectDateView
     case appointmentDetailsView
 }
@@ -19,19 +20,23 @@ enum MainScreenViewState {
 extension MainScreenViewState: Equatable {
     static func ==(lhs: MainScreenViewState, rhs: MainScreenViewState) -> Bool {
         switch (lhs, rhs) {
+        case (.initial, .initial):
+            return true
         case (.clinicServicesListView, .clinicServicesListView):
             return true
-        case let (.clinicServiceView(l), .clinicServiceView(r)):
-            return l == r
+        case (.clinicServiceView, .clinicServiceView):
+            return true
         case (.doctorsListView, .doctorsListView):
             return true
-        case let (.doctorView(l), .doctorView(r)):
-            return l == r
+        case (.doctorView, .doctorView):
+            return true
         case (.selectDateView, .selectDateView):
             return true
         case (.appointmentDetailsView, .appointmentDetailsView):
             return true
-        case (.clinicServicesListView, _),
+        case
+            (.initial, _),
+            (.clinicServicesListView, _),
             (.clinicServiceView, _),
             (.doctorsListView, _),
             (.doctorView, _),

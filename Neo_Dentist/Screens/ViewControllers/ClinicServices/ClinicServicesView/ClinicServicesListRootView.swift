@@ -42,7 +42,7 @@ class ClinicServicesListRootView: BaseView {
 
 extension ClinicServicesListRootView: ClinicServicesViewDelegate {
     func didSelected(for serviceID: Int) {
-        viewModel.serviceTapped(with: serviceID)
+        viewModel.navigateToSingleServiceView(with: serviceID)
     }
 }
 
