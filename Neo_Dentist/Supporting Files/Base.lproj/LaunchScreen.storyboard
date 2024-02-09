@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="22154" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" launchScreen="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="01J-lp-oVM">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22130"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--View Controller-->
+        <scene sceneID="EHf-IW-A2E">
+            <objects>
+                <viewController id="01J-lp-oVM" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="Ze5-6b-2t3">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="launch_bkc_image" translatesAutoresizingMaskIntoConstraints="NO" id="xxF-ou-GbG">
+                                <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                            </imageView>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" image="launch_icon" translatesAutoresizingMaskIntoConstraints="NO" id="Htk-HW-TuB">
+                                <rect key="frame" x="85.666666666666686" y="228.66666666666663" width="222" height="139"/>
+                            </imageView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Дентал Юникс" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bHF-Re-2k6">
+                                <rect key="frame" x="81.666666666666686" y="417.66666666666669" width="230" height="38.333333333333314"/>
+                                <fontDescription key="fontDescription" type="boldSystem" pointSize="32"/>
+                                <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="С заботой о ваших зубах" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="F1k-Sg-sUm">
+                                <rect key="frame" x="119" y="476" width="155" height="15"/>
+                                <fontDescription key="fontDescription" type="boldSystem" pointSize="12"/>
+                                <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
+                        <color key="backgroundColor" systemColor="secondarySystemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="xxF-ou-GbG" firstAttribute="top" secondItem="Ze5-6b-2t3" secondAttribute="top" id="M2N-Fh-8Ry"/>
+                            <constraint firstItem="F1k-Sg-sUm" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="fIr-8D-a34"/>
+                            <constraint firstAttribute="trailing" secondItem="xxF-ou-GbG" secondAttribute="trailing" id="g8f-81-Ljt"/>
+                            <constraint firstItem="bHF-Re-2k6" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="lF4-BT-H2d"/>
+                            <constraint firstItem="bHF-Re-2k6" firstAttribute="top" secondItem="Htk-HW-TuB" secondAttribute="bottom" constant="50" id="rbP-rn-OXH"/>
+                            <constraint firstItem="Htk-HW-TuB" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="uc3-zX-UL4"/>
+                            <constraint firstItem="F1k-Sg-sUm" firstAttribute="top" secondItem="bHF-Re-2k6" secondAttribute="bottom" constant="20" id="vUS-Uf-peS"/>
+                            <constraint firstItem="Htk-HW-TuB" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" multiplier="0.7" id="veO-dj-ViK"/>
+                            <constraint firstAttribute="bottom" secondItem="xxF-ou-GbG" secondAttribute="bottom" id="xAM-C5-FUb"/>
+                            <constraint firstItem="xxF-ou-GbG" firstAttribute="leading" secondItem="Ze5-6b-2t3" secondAttribute="leading" id="yF5-NU-F5t"/>
+                        </constraints>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="iYj-Kq-Ea1" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="52.671755725190835" y="374.64788732394368"/>
+        </scene>
+    </scenes>
+    <resources>
+        <image name="launch_bkc_image" width="393" height="852"/>
+        <image name="launch_icon" width="222" height="139"/>
+        <systemColor name="secondarySystemBackgroundColor">
+            <color red="0.94901960784313721" green="0.94901960784313721" blue="0.96862745098039216" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
+    </resources>
+</document>
